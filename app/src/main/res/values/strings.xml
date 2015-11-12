@@ -19,7 +19,9 @@
 	<string name="ip_setting_label">Address</string>
 	<string name="port_setting_label">Port</string>
 	<string name="command_setting_label">Command</string>
-	
+	<string name="auth_setting_label">Authentication</string>
+	<string name="username_setting_label">Username</string>
+	<string name="password_setting_label">Password</string>
 	<string name="digits_increment">+</string>
 	<string name="digits_decrement">-</string>
 	<string name="address_dot">.</string>

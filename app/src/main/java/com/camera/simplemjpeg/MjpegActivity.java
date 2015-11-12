@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,6 +15,7 @@ import android.view.MenuItem;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
@@ -22,7 +24,7 @@ import java.io.IOException;
 import java.net.URI;
 
 public class MjpegActivity extends Activity {
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     private static final String TAG = "MJPEG";
 
     private MjpegView mv = null;
@@ -31,15 +33,17 @@ public class MjpegActivity extends Activity {
     // for settings (network and resolution)
     private static final int REQUEST_SETTINGS = 0;
 
-    private int width = 640;
-    private int height = 480;
+    private int width = Const.width;
+    private int height = Const.height;
 
-    private int ip_ad1 = 192;
-    private int ip_ad2 = 168;
-    private int ip_ad3 = 2;
-    private int ip_ad4 = 1;
-    private int ip_port = 80;
-    private String ip_command = "?action=stream";
+    private int ip_ad1 = Const.ip_ad1;
+    private int ip_ad2 = Const.ip_ad2;
+    private int ip_ad3 = Const.ip_ad3;
+    private int ip_ad4 = Const.ip_ad4;
+    private int ip_port = Const.ip_port;
+    private String ip_command = Const.ip_command;
+    private String username = Const.username;
+    private String password = Const.password;
 
     private boolean suspending = false;
 
@@ -57,6 +61,8 @@ public class MjpegActivity extends Activity {
         ip_ad4 = preferences.getInt("ip_ad4", ip_ad4);
         ip_port = preferences.getInt("ip_port", ip_port);
         ip_command = preferences.getString("ip_command", ip_command);
+        username = preferences.getString("username", username);
+        password = preferences.getString("password", password);
 
         StringBuilder sb = new StringBuilder();
         String s_http = "http://";
@@ -84,7 +90,7 @@ public class MjpegActivity extends Activity {
         }
 
         setTitle(R.string.title_connecting);
-        new DoRead().execute(URL);
+        new DoRead().execute(URL, username, password);
     }
 
 
@@ -203,8 +209,25 @@ public class MjpegActivity extends Activity {
     }
 
     public class DoRead extends AsyncTask<String, Void, MjpegInputStream> {
-        protected MjpegInputStream doInBackground(String... url) {
-            //TODO: if camera has authentication deal with it and don't just not work
+        protected MjpegInputStream doInBackground(String... params) {
+            String url = params[0];
+            String userName = params[1];
+            String password = params[2];
+            //Authentication example: http://blog.leocad.io/basic-http-authentication-on-android/
+            if (DEBUG) {
+                Log.d(TAG, "start DoRead - " + url + "," + userName + "," + password);
+            }
+            HttpUriRequest request = new HttpGet(url); // Or HttpPost(), depends on your needs
+
+            if (userName != null && password != null && !"".equals(userName)) {
+                String credentials = userName + ":" + password;
+                if (DEBUG) {
+                    Log.d(TAG, "credentials:" + credentials);
+                }
+                String base64EncodedCredentials = Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
+                request.addHeader("Authorization", "Basic " + base64EncodedCredentials);
+            }
+
             HttpResponse res = null;
             DefaultHttpClient httpclient = new DefaultHttpClient();
             HttpParams httpParams = httpclient.getParams();
@@ -212,7 +235,7 @@ public class MjpegActivity extends Activity {
             HttpConnectionParams.setSoTimeout(httpParams, 5 * 1000);
             if (DEBUG) Log.d(TAG, "1. Sending http request");
             try {
-                res = httpclient.execute(new HttpGet(URI.create(url[0])));
+                res = httpclient.execute(request);
                 if (DEBUG)
                     Log.d(TAG, "2. Request finished, status = " + res.getStatusLine().getStatusCode());
                 if (res.getStatusLine().getStatusCode() == 401) {

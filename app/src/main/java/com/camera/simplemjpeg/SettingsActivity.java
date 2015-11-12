@@ -26,6 +26,8 @@ public class SettingsActivity extends Activity {
     EditText address4_input;
     EditText port_input;
     EditText command_input;
+    EditText authUsername;
+    EditText authPassword;
 
     Button address1_increment;
     Button address2_increment;
@@ -40,15 +42,37 @@ public class SettingsActivity extends Activity {
     RadioGroup port_group;
     RadioGroup command_group;
 
-    int width = 640;
-    int height = 480;
+    int width = Const.width;
+    int height = Const.height;
 
-    int ip_ad1 = 192;
-    int ip_ad2 = 168;
-    int ip_ad3 = 2;
-    int ip_ad4 = 1;
-    int ip_port = 80;
-    String ip_command = "?action=stream";
+    int ip_ad1 = Const.ip_ad1;
+    int ip_ad2 = Const.ip_ad2;
+    int ip_ad3 = Const.ip_ad3;
+    int ip_ad4 = Const.ip_ad4;
+    int ip_port = Const.ip_port;
+
+    String username = Const.username;
+    String password = Const.password;
+
+    String ip_command = Const.ip_command;
+
+    private int addToByte(String byteValue, int defaultValue, int value) {
+        int val = defaultValue;
+
+        if (!"".equals(byteValue)) {
+            val = Integer.parseInt(byteValue);
+        }
+
+        val += value;
+
+        if (val < 0) {
+            val = 0;
+        } else if (val > 255) {
+            val = 255;
+        }
+
+        return val;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,6 +99,9 @@ public class SettingsActivity extends Activity {
         port_input = (EditText) findViewById(R.id.port_input);
         command_input = (EditText) findViewById(R.id.command_input);
 
+        authPassword = (EditText) findViewById(R.id.authPassword);
+        authUsername = (EditText) findViewById(R.id.authUsername);
+
         port_group = (RadioGroup) findViewById(R.id.port_radiogroup);
         command_group = (RadioGroup) findViewById(R.id.command_radiogroup);
 
@@ -89,6 +116,9 @@ public class SettingsActivity extends Activity {
             ip_port = extras.getInt("ip_port", ip_port);
             ip_command = extras.getString("ip_command");
 
+            password = extras.getString("password");
+            username = extras.getString("username");
+
             width_input.setText(String.valueOf(width));
             height_input.setText(String.valueOf(height));
             resolution_spinner.setSelection(adapter.getCount() - 1);
@@ -99,31 +129,18 @@ public class SettingsActivity extends Activity {
             address4_input.setText(String.valueOf(ip_ad4));
             port_input.setText(String.valueOf(ip_port));
             command_input.setText(ip_command);
+
+            authPassword.setText(password);
+            authUsername.setText(username);
         }
 
         resolution_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View viw, int arg2, long arg3) {
                 Spinner spinner = (Spinner) parent;
                 String item = (String) spinner.getSelectedItem();
-                if (item.equals("640x480")) {
-                    width = 640;
-                    height = 480;
-                } else if (item.equals("480x640")) {
-                    width = 480;
-                    height = 640;
-                } else if (item.equals("320x240")) {
-                    width = 320;
-                    height = 240;
-                } else if (item.equals("240x320")) {
-                    width = 240;
-                    height = 320;
-                } else if (item.equals("176x144")) {
-                    width = 176;
-                    height = 144;
-                } else if (item.equals("144x176")) {
-                    width = 144;
-                    height = 176;
-                }
+                String[] items = item.split("x");
+                width = Integer.valueOf(items[0]);
+                height = Integer.valueOf(items[1]);
                 width_input.setText(String.valueOf(width));
                 height_input.setText(String.valueOf(height));
             }
@@ -136,20 +153,7 @@ public class SettingsActivity extends Activity {
         address1_increment.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        String s = address1_input.getText().toString();
-                        int val = ip_ad1;
-                        if (!"".equals(s)) {
-                            val = Integer.parseInt(s);
-                        }
-                        if (val >= 0 && val < 255) {
-                            val += 1;
-                        } else if (val < 0) {
-                            val = 0;
-                        } else if (val >= 255) {
-                            val = 255;
-                        }
-
-                        ip_ad1 = val;
+                        ip_ad1 = addToByte(address1_input.getText().toString(), ip_ad1, 1);
                         address1_input.setText(String.valueOf(ip_ad1), BufferType.NORMAL);
 
                     }
@@ -159,20 +163,7 @@ public class SettingsActivity extends Activity {
         address2_increment.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        String s = address2_input.getText().toString();
-                        int val = ip_ad2;
-                        if (!"".equals(s)) {
-                            val = Integer.parseInt(s);
-                        }
-                        if (val >= 0 && val < 255) {
-                            val += 1;
-                        } else if (val < 0) {
-                            val = 0;
-                        } else if (val >= 255) {
-                            val = 255;
-                        }
-
-                        ip_ad2 = val;
+                        ip_ad2 = addToByte(address2_input.getText().toString(), ip_ad2, 1);
                         address2_input.setText(String.valueOf(ip_ad2), BufferType.NORMAL);
 
                     }
@@ -182,20 +173,7 @@ public class SettingsActivity extends Activity {
         address3_increment.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        String s = address3_input.getText().toString();
-                        int val = ip_ad3;
-                        if (!"".equals(s)) {
-                            val = Integer.parseInt(s);
-                        }
-                        if (val >= 0 && val < 255) {
-                            val += 1;
-                        } else if (val < 0) {
-                            val = 0;
-                        } else if (val >= 255) {
-                            val = 255;
-                        }
-
-                        ip_ad3 = val;
+                        ip_ad3 = addToByte(address3_input.getText().toString(), ip_ad3, 1);
                         address3_input.setText(String.valueOf(ip_ad3), BufferType.NORMAL);
 
                     }
@@ -205,20 +183,7 @@ public class SettingsActivity extends Activity {
         address4_increment.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        String s = address4_input.getText().toString();
-                        int val = ip_ad4;
-                        if (!"".equals(s)) {
-                            val = Integer.parseInt(s);
-                        }
-                        if (val >= 0 && val < 255) {
-                            val += 1;
-                        } else if (val < 0) {
-                            val = 0;
-                        } else if (val >= 255) {
-                            val = 255;
-                        }
-
-                        ip_ad4 = val;
+                        ip_ad4 = addToByte(address4_input.getText().toString(), ip_ad4, 1);
                         address4_input.setText(String.valueOf(ip_ad4), BufferType.NORMAL);
 
                     }
@@ -229,20 +194,7 @@ public class SettingsActivity extends Activity {
         address1_decrement.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        String s = address1_input.getText().toString();
-                        int val = ip_ad1;
-                        if (!"".equals(s)) {
-                            val = Integer.parseInt(s);
-                        }
-                        if (val > 0 && val <= 255) {
-                            val -= 1;
-                        } else if (val <= 0) {
-                            val = 0;
-                        } else if (val > 255) {
-                            val = 255;
-                        }
-
-                        ip_ad1 = val;
+                        ip_ad1 = addToByte(address1_input.getText().toString(), ip_ad1, -1);
                         address1_input.setText(String.valueOf(ip_ad1), BufferType.NORMAL);
 
                     }
@@ -253,20 +205,7 @@ public class SettingsActivity extends Activity {
         address2_decrement.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        String s = address2_input.getText().toString();
-                        int val = ip_ad2;
-                        if (!"".equals(s)) {
-                            val = Integer.parseInt(s);
-                        }
-                        if (val > 0 && val <= 255) {
-                            val -= 1;
-                        } else if (val <= 0) {
-                            val = 0;
-                        } else if (val > 255) {
-                            val = 255;
-                        }
-
-                        ip_ad2 = val;
+                        ip_ad2 = addToByte(address2_input.getText().toString(), ip_ad2, -1);
                         address2_input.setText(String.valueOf(ip_ad2), BufferType.NORMAL);
 
                     }
@@ -276,20 +215,7 @@ public class SettingsActivity extends Activity {
         address3_decrement.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        String s = address3_input.getText().toString();
-                        int val = ip_ad3;
-                        if (!"".equals(s)) {
-                            val = Integer.parseInt(s);
-                        }
-                        if (val > 0 && val <= 255) {
-                            val -= 1;
-                        } else if (val <= 0) {
-                            val = 0;
-                        } else if (val > 255) {
-                            val = 255;
-                        }
-
-                        ip_ad3 = val;
+                        ip_ad3 = addToByte(address3_input.getText().toString(), ip_ad3, -1);
                         address3_input.setText(String.valueOf(ip_ad3), BufferType.NORMAL);
 
                     }
@@ -299,20 +225,7 @@ public class SettingsActivity extends Activity {
         address4_decrement.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View view) {
-                        String s = address4_input.getText().toString();
-                        int val = ip_ad4;
-                        if (!"".equals(s)) {
-                            val = Integer.parseInt(s);
-                        }
-                        if (val > 0 && val <= 255) {
-                            val -= 1;
-                        } else if (val <= 0) {
-                            val = 0;
-                        } else if (val > 255) {
-                            val = 255;
-                        }
-
-                        ip_ad4 = val;
+                        ip_ad4 = addToByte(address4_input.getText().toString(), ip_ad4, -1);
                         address4_input.setText(String.valueOf(ip_ad4), BufferType.NORMAL);
 
                     }
@@ -344,40 +257,17 @@ public class SettingsActivity extends Activity {
                 new View.OnClickListener() {
                     public void onClick(View view) {
 
-                        String s;
+                        width = getInt(width_input, width);
+                        height = getInt(height_input, height);
+                        ip_ad1 = getInt(address1_input, ip_ad1);
+                        ip_ad2 = getInt(address2_input, ip_ad2);
+                        ip_ad3 = getInt(address3_input, ip_ad3);
+                        ip_ad4 = getInt(address4_input, ip_ad4);
+                        ip_port = getInt(port_input, ip_port);
+                        ip_command = command_input.getText().toString();
 
-                        s = width_input.getText().toString();
-                        if (!"".equals(s)) {
-                            width = Integer.parseInt(s);
-                        }
-                        s = height_input.getText().toString();
-                        if (!"".equals(s)) {
-                            height = Integer.parseInt(s);
-                        }
-                        s = address1_input.getText().toString();
-                        if (!"".equals(s)) {
-                            ip_ad1 = Integer.parseInt(s);
-                        }
-                        s = address2_input.getText().toString();
-                        if (!"".equals(s)) {
-                            ip_ad2 = Integer.parseInt(s);
-                        }
-                        s = address3_input.getText().toString();
-                        if (!"".equals(s)) {
-                            ip_ad3 = Integer.parseInt(s);
-                        }
-                        s = address4_input.getText().toString();
-                        if (!"".equals(s)) {
-                            ip_ad4 = Integer.parseInt(s);
-                        }
-
-                        s = port_input.getText().toString();
-                        if (!"".equals(s)) {
-                            ip_port = Integer.parseInt(s);
-                        }
-
-                        s = command_input.getText().toString();
-                        ip_command = s;
+                        username = authUsername.getText().toString();
+                        password = authPassword.getText().toString();
 
                         Intent intent = new Intent();
                         intent.putExtra("width", width);
@@ -389,10 +279,23 @@ public class SettingsActivity extends Activity {
                         intent.putExtra("ip_port", ip_port);
                         intent.putExtra("ip_command", ip_command);
 
+                        intent.putExtra("password", password);
+                        intent.putExtra("username", username);
+
                         setResult(RESULT_OK, intent);
                         finish();
                     }
                 }
         );
+    }
+
+    private int getInt(EditText edit, int defaultValue) {
+        String s = edit.getText().toString();
+
+        if (!"".equals(s)) {
+            return Integer.parseInt(s);
+        }
+
+        return defaultValue;
     }
 }

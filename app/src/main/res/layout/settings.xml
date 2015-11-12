@@ -261,9 +261,49 @@
 				            android:text="@string/command_videofeed_with_explanation" />
 			</RadioGroup>
 
-     			
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/auth_setting_label"
+			android:id="@+id/textView" />
+
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent">
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/username_setting_label"
+				android:id="@+id/textView2" />
+
+			<EditText
+				android:id="@+id/authUsername"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:gravity="right|center_vertical"
+				android:singleLine="true"
+				android:inputType="text" />
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/password_setting_label"
+				android:id="@+id/textView3" />
+
+			<EditText
+				android:id="@+id/authPassword"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:gravity="right|center_vertical"
+				android:singleLine="true"
+				android:inputType="text" />
+		</LinearLayout>
+
 		<Button android:id="@+id/settings_done"
-			android:layout_width="fill_parent"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:text="@string/settings_done" />
     </LinearLayout>
