@@ -10,6 +10,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -34,7 +35,7 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
     private MjpegViewThread thread;
     private MjpegInputStream mIn = null;
     private boolean showFps = false;
-    private boolean mRun = false;
+    private volatile boolean mRun = false;
     private boolean surfaceDone = false;
 
     private Paint overlayPaint;
@@ -224,6 +225,7 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void stopPlayback() {
+        Log.d(TAG, "stopPlayback start");
         if (mRun) {
             suspending = true;
         }
@@ -246,6 +248,7 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
             }
             mIn = null;
         }
+        Log.d(TAG, "endPlayback start");
 
     }
 

@@ -114,12 +114,14 @@ public class MjpegActivity extends Activity {
     public void onPause() {
         if (DEBUG) Log.d(TAG, "onPause()");
         super.onPause();
+        Log.d(TAG," super.onPause done");
         if (mv != null) {
             if (mv.isStreaming()) {
                 mv.stopPlayback();
                 suspending = true;
             }
         }
+        Log.d(TAG, "onPause() end");
     }
 
     public void onStop() {
